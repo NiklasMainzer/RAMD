@@ -1,7 +1,7 @@
 library(Biobase)
 library(limma)
 
-data<- read.table(file = "/Users/deborahhoeltje/Desktop/TUBS4/medDaten/Prüfungsprojekte/Project8_crohns.txt", header = TRUE)
+data <- read.table(file = "/Users/deborahhoeltje/Desktop/TUBS4/medDaten/Prüfungsprojekte/Project8_crohns.txt", header = TRUE)
 
 data_control <- read.table(file = "/Users/deborahhoeltje/Desktop/TUBS4/medDaten/Prüfungsprojekte/Project8_control.txt", header = TRUE)
 
@@ -30,4 +30,15 @@ summary(decideTests(fit2))
 
 top.table <- topTable(fit2, sort.by = "P", n = Inf)
 head(top.table, 20)
+
+
+#############
+### Plots ###
+#############
+stats <- topTable(fit2, number = nrow(fit2), sort.by = "none")
+head(top.table, 20)
+hist(runif(10000))
+hist(stats[, "P.Value"])
+
+volcanoplot(fit2, highlight = 5, names = fit2$genes[, "hgnc"])
 
