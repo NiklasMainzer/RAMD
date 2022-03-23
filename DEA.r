@@ -63,3 +63,11 @@ hist(stats[, "P.Value"])
 # most significant genes are at top (high p value) and left/right the most up/downregulated genes
 volcanoplot(fit2, highlight = 5, names = fit2$genes[, "hgnc"])
 
+#############
+### GSEA  ###
+#############
+
+# http://www.gsea-msigdb.org/gsea/doc/GSEAUserGuideFrame.html?_Interpreting_GSEA_Results
+# GSEAplot, index ist das jeweilige Gen in der GESA
+gseaplot(gse, by = "all", title = gse$Description[2], geneSetID = 2)
+
