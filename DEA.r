@@ -124,6 +124,26 @@ gseaplot(gse, by = "all", title = gse$Description[2], geneSetID = 2)
 
 pmcplot(terms, 2010:2022, proportion=FALSE)
 
+
+#######################
+### Pathway Analyse ###
+#######################
+
+# Reformat the hgnc-entrez dictionary to a dataframe only containing the corrensponding entrez
+library(data.table)
+entrez2 <- as.data.frame(t(entrez))
+entrez2 <- transpose(entrez2)
+colnames(entrez2) <- 'entrez'
+
+# Replace the hgnc genes with the entrez
+fit3 <- fit2
+fit3$genes <- entrez2
+
+# kegga Pathway analysis
+entrez_kegga = fit3$genes[, "entrez"]
+enrich_kegg <- kegga(fit3, geneid = entrez_kegga, species = "Hs")
+topKEGG(enrich_kegg)
+
 # TODO: 
 # - Fishers t test to obtain p-values
 # - try GSEA goana: https://jdblischak.github.io/dc-bioc-limma/vdx.html
