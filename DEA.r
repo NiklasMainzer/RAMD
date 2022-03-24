@@ -70,10 +70,11 @@ volcanoplot(fit2, highlight = 5, names = fit2$genes[, "hgnc"])
 #############
 ### GSEA  ###
 #############
-library('org.Hs.eg.db')
+library('org.Hs.eg.db') # Genome wide annotation for Human
 library(ggplot2)
 library(enrichplot)
 library(clusterProfiler)
+library(EnrichmentBrowser)
 
 columns(org.Hs.eg.db)
 
@@ -88,8 +89,9 @@ names(original_gene_list) <- total_data$hgnc
 gene_list<-na.omit(original_gene_list)
 gene_list = sort(gene_list, decreasing = TRUE)
 
+# Gene Set Enrichment Analysis of Gene Ontology
 gse <- gseGO(geneList=gene_list, 
-             ont ="ALL", 
+             ont ="ALL", # CC: Cellular Component, MF: Molecular function, BP: Biological Process
              keyType = "SYMBOL", 
              nPerm = 10000, 
              minGSSize = 3, 
@@ -121,4 +123,9 @@ ridgeplot(gse) + labs(x = "enrichment distribution")
 gseaplot(gse, by = "all", title = gse$Description[2], geneSetID = 2)
 
 pmcplot(terms, 2010:2022, proportion=FALSE)
+
+# TODO: 
+# - Fishers t test to obtain p-values
+# - try GSEA goana: https://jdblischak.github.io/dc-bioc-limma/vdx.html
+# - overrepresentation analysis: https://yulab-smu.top/biomedical-knowledge-mining-book/enrichment-overview.html
 
