@@ -5,6 +5,10 @@ data <- read.table(file = "/Users/deborahhoeltje/Desktop/TUBS4/medDaten/Prüfun
 
 data_control <- read.table(file = "/Users/deborahhoeltje/Desktop/TUBS4/medDaten/Prüfungsprojekte/Project8_control.txt", header = TRUE)
 
+#############
+### DEA  ###
+#############
+
 groups = gsub("_.*", "", colnames( total_data))
 colnames(total_data)= c('hgnc', 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1)
 
@@ -66,8 +70,55 @@ volcanoplot(fit2, highlight = 5, names = fit2$genes[, "hgnc"])
 #############
 ### GSEA  ###
 #############
+library('org.Hs.eg.db')
+library(ggplot2)
+library(enrichplot)
+library(clusterProfiler)
+
+columns(org.Hs.eg.db)
+
+test_func = function(x) {return(x[1])}
+tmp <- apply(total_data,1,test_func)
+
+# Map hgnc Nomenklatur zur entrez ID 
+entrez <- mapIds(org.Hs.eg.db, tmp, 'ENTREZID', 'SYMBOL')
+
+original_gene_list <- top.table$logFC
+names(original_gene_list) <- total_data$hgnc
+gene_list<-na.omit(original_gene_list)
+gene_list = sort(gene_list, decreasing = TRUE)
+
+gse <- gseGO(geneList=gene_list, 
+             ont ="ALL", 
+             keyType = "SYMBOL", 
+             nPerm = 10000, 
+             minGSSize = 3, 
+             maxGSSize = 800, 
+             pvalueCutoff = 0.05, 
+             verbose = TRUE, 
+             OrgDb = 'org.Hs.eg.db', 
+             pAdjustMethod = "none")
+
+
+#############
+### Plots ###
+#############
+
+require(DOSE)
+
+dotplot(gse, showCategory=10, split=".sign") + facet_grid(.~.sign)
+
+gse2 <- pairwise_termsim(gse, semData="org.Dm.eg.db")
+emapplot(gse2)
+
+cnetplot(gse, categorySize="pvalue", foldChange=gene_list, showCategory = 3)
+cnetplot(gse, categorySize="pvalue", foldChange=gene_list)
+
+ridgeplot(gse) + labs(x = "enrichment distribution")
 
 # http://www.gsea-msigdb.org/gsea/doc/GSEAUserGuideFrame.html?_Interpreting_GSEA_Results
 # GSEAplot, index ist das jeweilige Gen in der GESA
 gseaplot(gse, by = "all", title = gse$Description[2], geneSetID = 2)
+
+pmcplot(terms, 2010:2022, proportion=FALSE)
 
