@@ -67,10 +67,11 @@ hist(stats[, "P.Value"])
 # most significant genes are at top (high p value) and left/right the most up/downregulated genes
 volcanoplot(fit2, highlight = 5, names = fit2$genes[, "hgnc"])
 
+
 #############
 ### GSEA  ###
 #############
-library('org.Hs.eg.db') # Genome wide annotation for Human
+library('org.Hs.eg.db') # Genome wide annotation for Hs (homo sapiens)
 library(ggplot2)
 library(enrichplot)
 library(clusterProfiler)
@@ -90,8 +91,11 @@ gene_list<-na.omit(original_gene_list)
 gene_list = sort(gene_list, decreasing = TRUE)
 
 # Gene Set Enrichment Analysis of Gene Ontology
+# CC: Cellular Component, MF: Molecular function, BP: Biological Process
+# Only gene Set size in [minGSSize, maxGSSize] will be tested
+# GSEA use permutation test -> nPerm ---> also tried without perm (see plots annotated with *_noPerm.pdf)
 gse <- gseGO(geneList=gene_list, 
-             ont ="ALL", # CC: Cellular Component, MF: Molecular function, BP: Biological Process
+             ont ="ALL", 
              keyType = "SYMBOL", 
              nPerm = 10000, 
              minGSSize = 3, 
@@ -110,7 +114,7 @@ require(DOSE)
 
 dotplot(gse, showCategory=10, split=".sign") + facet_grid(.~.sign)
 
-gse2 <- pairwise_termsim(gse, semData="org.Dm.eg.db")
+gse2 <- pairwise_termsim(gse, semData="org.Hs.eg.db") # Falsche DB -> mit neues DB emap_neu.pdf
 emapplot(gse2)
 
 cnetplot(gse, categorySize="pvalue", foldChange=gene_list, showCategory = 3)
@@ -144,8 +148,28 @@ entrez_kegga = fit3$genes[, "entrez"]
 enrich_kegg <- kegga(fit3, geneid = entrez_kegga, species = "Hs")
 topKEGG(enrich_kegg)
 
+# https://jdblischak.github.io/dc-bioc-limma/vdx.html
+# GO over representation analysis
+enrich_go <- goana(fit3, geneid = entrez, species = "Hs") # Hs for Homo Sapiens
+topGO(enrich_go, ontology = "BP")
+topGO(enrich_go)
+
+# Convert SYMBOL to ENTREZ
+#names(gene_list) <- entrez2$entrez
+de <- names(gene_list)[abs(gene_list) > 2]
+ego <- enrichGO(de, OrgDb = "org.Hs.eg.db", keyType="SYMBOL", ont="BP", readable=FALSE)
+goplot(ego)
+
+ggo <- groupGO(gene     = de,
+                OrgDb    = org.Hs.eg.db,
+                ont      = "BP",
+                level    = 3,
+                keyType="SYMBOL",
+               readable = FALSE)
+            
+
 # TODO: 
 # - Fishers t test to obtain p-values
-# - try GSEA goana: https://jdblischak.github.io/dc-bioc-limma/vdx.html
 # - overrepresentation analysis: https://yulab-smu.top/biomedical-knowledge-mining-book/enrichment-overview.html
+# - gsea top table bekommen
 
