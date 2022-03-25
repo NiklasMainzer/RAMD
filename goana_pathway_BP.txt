@@ -1,0 +1,21 @@
+                                                                                Term Ont     N   Up Down          P.Up        P.Down
+GO:0044237                                                cellular metabolic process  BP  9679  967 2231  7.001180e-01 7.564369e-147
+GO:0008152                                                         metabolic process  BP 10622 1142 2336  1.279492e-03 3.033353e-129
+GO:0044238                                                 primary metabolic process  BP  9445  951 2123  5.724310e-01 4.331812e-119
+GO:0071704                                       organic substance metabolic process  BP 10159 1089 2219  3.002370e-03 2.005515e-112
+GO:0009987                                                          cellular process  BP 15437 1728 2971  1.189717e-16 9.543265e-108
+GO:0008150                                                        biological_process  BP 16301 1827 3081  1.644830e-20 1.546770e-107
+GO:0006955                                                           immune response  BP  1604  460  187 2.889039e-106  9.999996e-01
+GO:0002376                                                     immune system process  BP  2380  573  306  1.301805e-99  9.999920e-01
+GO:0006807                                       nitrogen compound metabolic process  BP  8979  909 1979  4.812746e-01  4.103632e-95
+GO:0006952                                                          defense response  BP  1494  405  165  3.078737e-84  1.000000e+00
+GO:0034641                              cellular nitrogen compound metabolic process  BP  5947  515 1395  9.999947e-01  1.805213e-74
+GO:0009605                                             response to external stimulus  BP  2506  536  346  5.203065e-72  9.986405e-01
+GO:0009607                                               response to biotic stimulus  BP  1317  349  167  4.496143e-69  9.995776e-01
+GO:0051707                                                response to other organism  BP  1277  342  160  7.081125e-69  9.997157e-01
+GO:0043207                                      response to external biotic stimulus  BP  1278  342  160  8.792526e-69  9.997280e-01
+GO:0002682                                       regulation of immune system process  BP  1277  341  160  2.588248e-68  9.997157e-01
+GO:0044419 biological process involved in interspecies interaction between organisms  BP  1422  355  197  4.298945e-63  9.847109e-01
+GO:0044260                                  cellular macromolecule metabolic process  BP  7279  727 1585  6.672896e-01  3.612705e-62
+GO:0043170                                           macromolecule metabolic process  BP  8785  933 1827  2.156130e-02  1.660996e-59
+GO:1901360                                 organic cyclic compound metabolic process  BP  5613  484 1280  9.999932e-01  3.833163e-58

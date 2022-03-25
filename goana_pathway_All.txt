@@ -1,0 +1,21 @@
+                                               Term Ont     N   Up Down          P.Up        P.Down
+GO:0005622       intracellular anatomical structure  CC 13807 1497 2919  1.724300e-06 1.594412e-185
+GO:0043226                                organelle  CC 13026 1399 2779  1.076678e-04 5.670739e-168
+GO:0043227               membrane-bounded organelle  CC 12255 1322 2666  1.066289e-04 5.533859e-166
+GO:0043229                  intracellular organelle  CC 12263 1296 2656  6.152154e-03 8.455024e-161
+GO:0043231 intracellular membrane-bounded organelle  CC 11257 1195 2507  5.885505e-03 2.553572e-160
+GO:0044237               cellular metabolic process  BP  9679  967 2231  7.001180e-01 7.564369e-147
+GO:0008152                        metabolic process  BP 10622 1142 2336  1.279492e-03 3.033353e-129
+GO:0003674                       molecular_function  MF 16681 1859 3161  5.063899e-20 7.545515e-124
+GO:0044238                primary metabolic process  BP  9445  951 2123  5.724310e-01 4.331812e-119
+GO:0005737                                cytoplasm  CC 11069 1352 2378  2.067790e-25 7.362803e-119
+GO:0005488                                  binding  MF 15065 1702 2937  2.771299e-18 4.094077e-114
+GO:0071704      organic substance metabolic process  BP 10159 1089 2219  3.002370e-03 2.005515e-112
+GO:0005575                       cellular_component  CC 17083 1898 3180  9.762913e-21 2.787673e-109
+GO:0005739                            mitochondrion  CC  1525  133  584  9.733252e-01 5.101678e-109
+GO:0009987                         cellular process  BP 15437 1728 2971  1.189717e-16 9.543265e-108
+GO:0008150                       biological_process  BP 16301 1827 3081  1.644830e-20 1.546770e-107
+GO:0006955                          immune response  BP  1604  460  187 2.889039e-106  9.999996e-01
+GO:0110165               cellular anatomical entity  CC 16944 1887 3155  4.869892e-21 3.306532e-105
+GO:0002376                    immune system process  BP  2380  573  306  1.301805e-99  9.999920e-01
+GO:0006807      nitrogen compound metabolic process  BP  8979  909 1979  4.812746e-01  4.103632e-95
