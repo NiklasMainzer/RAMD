@@ -7,6 +7,44 @@ data_control <- read.table(file = "/Users/deborahhoeltje/Desktop/TUBS4/medDaten/
 
 total_data <- data.frame(data, data_control)
 
+###########################
+### Explorative Analyse ###
+###########################
+
+# define important genes by calculating mean/median btw sick/not sick and chose those where the difference is significant
+# clustering might identify which genes belong to one group (pathway analysis and stuff?)
+
+total_data_matrix <- data.matrix(total_data)
+total_data_matrix <- total_data_matrix[,-c(1)]
+plotDensities(total_data_matrix)
+
+# MA Plot
+# Points further from M=0 line indicate genes with significant expression - down/upregulated
+limma::plotMA(total_data_matrix, main="MA Plot")
+
+#Hierarchical cluster (all genes would be too much), choose the ones that have the highest difference between the median of ibd patients & control group
+median_both <- data.frame(ibd = ibd_median, control=control_median)
+median_both$hgnc <- data$hgnc
+median_both$diff <- median_both$ibd - median_both$control
+high_genes <- median_both
+# high_genes[high_genes$diff >= 1,]
+
+# Filtered 124 genes to continue clustering
+filtered_genes <- high_genes[abs(high_genes$diff) >= 1,]
+
+data_filtered = data.frame()
+data_filtered <- total_data[total_data$hgnc %in% filtered_genes$hgnc,]
+
+data_filtered_dist_genes <- dist(data_filtered)
+filtered_matrix <- data.matrix(data_filtered)
+filtered_matrix <- filtered_matrix[,-c(1)]
+data_filtered_dist_samples <- dist(t(filtered_matrix))
+
+gene_hclust <- hclust(data_filtered_dist_genes, method = "complete")
+plot(gene_hclust)
+
+cutree(gene_hclust, k = 2)
+
 #############
 ### DEA  ###
 #############
@@ -57,10 +95,10 @@ head(top.table, 20) # see topGenes_DEA.txt file for output
 top.table_fc <- topTable(fit2, sort.by = "logFC", n = Inf)
 head(top.table_fc, 20)
 
-
 #############
 ### Plots ###
 #############
+
 stats <- topTable(fit2, number = nrow(fit2), sort.by = "none")
 head(top.table, 20)
 
@@ -112,7 +150,6 @@ gse <- gseGO(geneList=gene_list,
              OrgDb = 'org.Hs.eg.db', 
              pAdjustMethod = "none")
 
-
 #############
 ### Plots ###
 #############
@@ -135,25 +172,9 @@ gseaplot(gse, by = "all", title = gse$Description[2], geneSetID = 2)
 
 pmcplot(terms, 2010:2021, proportion=FALSE)
 
-
-#######################
-### Pathway Analyse ###
-#######################
-
-# Reformat the hgnc-entrez dictionary to a dataframe only containing the corrensponding entrez
-library(data.table)
-entrez2 <- as.data.frame(t(entrez))
-entrez2 <- transpose(entrez2)
-colnames(entrez2) <- 'entrez'
-
-# Replace the hgnc genes with the entrez
-fit3 <- fit2
-fit3$genes <- entrez2
-
-# KEGG Pathway analysis (kegga)
-entrez_kegga = fit3$genes[, "entrez"]
-enrich_kegg <- kegga(fit3, geneid = entrez_kegga, species = "Hs")
-topKEGG(enrich_kegg)
+####################
+### Further GSEA ###
+####################
 
 # https://jdblischak.github.io/dc-bioc-limma/vdx.html
 # GO over representation analysis
@@ -211,43 +232,22 @@ dme <- pathview(gene.data=kegg_gene_list, pathway.id="hsa02010", species = kegg_
 # TODO: 
 # - Fishers t test to obtain p-values
 # - overrepresentation analysis: https://yulab-smu.top/biomedical-knowledge-mining-book/enrichment-overview.html
-# - gsea top table bekommen
 
-###########################
-### Explorative Analyse ###
-###########################
+#######################
+### Pathway Analyse ###
+#######################
 
-# define important genes by calculating mean/median btw sick/not sick and chose those where the difference is significant
-# clustering might identify which genes belong to one group (pathway analysis and stuff?)
+# Reformat the hgnc-entrez dictionary to a dataframe only containing the corrensponding entrez
+library(data.table)
+entrez2 <- as.data.frame(t(entrez))
+entrez2 <- transpose(entrez2)
+colnames(entrez2) <- 'entrez'
 
-total_data_matrix <- data.matrix(total_data)
-total_data_matrix <- total_data_matrix[,-c(1)]
-plotDensities(total_data_matrix)
+# Replace the hgnc genes with the entrez
+fit3 <- fit2
+fit3$genes <- entrez2
 
-# MA Plot
-# Points further from M=0 line indicate genes with significant expression - down/upregulated
-limma::plotMA(total_data_matrix, main="MA Plot")
-
-#Hierarchical cluster (all genes would be too much), choose the ones that have the highest difference between the median of ibd patients & control group
-median_both <- data.frame(ibd = ibd_median, control=control_median)
-median_both$hgnc <- data$hgnc
-median_both$diff <- median_both$ibd - median_both$control
-high_genes <- median_both
-# high_genes[high_genes$diff >= 1,]
-
-# Filtered 124 genes to continue clustering
-filtered_genes <- high_genes[abs(high_genes$diff) >= 1,]
-
-data_filtered = data.frame()
-data_filtered <- total_data[total_data$hgnc %in% filtered_genes$hgnc,]
-
-data_filtered_dist_genes <- dist(data_filtered)
-filtered_matrix <- data.matrix(data_filtered)
-filtered_matrix <- filtered_matrix[,-c(1)]
-data_filtered_dist_samples <- dist(t(filtered_matrix))
-
-gene_hclust <- hclust(data_filtered_dist_genes, method = "complete")
-plot(gene_hclust)
-
-cutree(gene_hclust, k = 2)
-
+# KEGG Pathway analysis (kegga)
+entrez_kegga = fit3$genes[, "entrez"]
+enrich_kegg <- kegga(fit3, geneid = entrez_kegga, species = "Hs")
+topKEGG(enrich_kegg)
