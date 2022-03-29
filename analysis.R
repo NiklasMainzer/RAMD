@@ -45,8 +45,16 @@ plot(gene_hclust)
 
 cutree(gene_hclust, k = 2)
 
+# 150 random genes
+random_total_data <- total_data[sample(nrow(total_data), 1500), ]
+random_total_data_matrix <- data.matrix(random_total_data)
+random_total_data_matrix <- random_total_data_matrix[,-c(1)]
+random_total_dist_samples = dist(t(random_total_data_matrix))
+random_clust = hclust(random_total_dist_samples, method = "complete")
+plot(random_clust)
+
 #############
-### DEA  ###
+###  DEA  ###
 #############
 
 groups = gsub("_.*", "", colnames(total_data))
@@ -112,7 +120,6 @@ hist(stats[, "P.Value"])
 # most significant genes are at top (high p value) and left/right the most up/downregulated genes
 volcanoplot(fit2, highlight = 5, names = fit2$genes[, "hgnc"])
 
-
 #############
 ### GSEA  ###
 #############
@@ -142,7 +149,7 @@ gene_list = sort(gene_list, decreasing = TRUE)
 gse <- gseGO(geneList=gene_list, 
              ont ="ALL", 
              keyType = "SYMBOL", 
-             #nPerm = 10000, 
+             # nPerm = 10000, 
              minGSSize = 3, 
              maxGSSize = 800, 
              pvalueCutoff = 0.05, 
@@ -172,9 +179,11 @@ gseaplot(gse, by = "all", title = gse$Description[2], geneSetID = 2)
 
 pmcplot(terms, 2010:2021, proportion=FALSE)
 
-####################
-### Further GSEA ###
-####################
+###################################
+### Overrepresentation Analysis ###
+###################################
+
+# Problematic: just counting ignores p-values and fold-changes
 
 # https://jdblischak.github.io/dc-bioc-limma/vdx.html
 # GO over representation analysis
@@ -195,7 +204,7 @@ ggo <- groupGO(gene     = de,
                 keyType="SYMBOL",
                readable = FALSE)
 
-# KEGG gseKegg
+# GSEA KEGG gseKegg
 ids<-bitr(names(original_gene_list), fromType = "SYMBOL", toType = "ENTREZID", OrgDb="org.Hs.eg.db")
 dedup_ids = ids[!duplicated(ids[c("SYMBOL")]),]
 df2 = top.table[total_data$hgnc %in% dedup_ids$SYMBOL,]
@@ -250,4 +259,4 @@ fit3$genes <- entrez2
 # KEGG Pathway analysis (kegga)
 entrez_kegga = fit3$genes[, "entrez"]
 enrich_kegg <- kegga(fit3, geneid = entrez_kegga, species = "Hs")
-topKEGG(enrich_kegg)
+topKEGG(enrich_kegg) # kegga_pathway.txt
