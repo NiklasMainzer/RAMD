@@ -18,6 +18,6 @@ In diesem Projekt werden wir verschiedene bioinformatische Methoden nutzen, um s
 |Kapitel 8|Niklas|100%|
 #### Projektmitglieder
 
-Niklas Mainzer
-Ricarda Koperski
+Niklas Mainzer,
+Ricarda Koperski und
 Debroah Höltje
