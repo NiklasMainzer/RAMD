@@ -6,3 +6,12 @@ Entzündliche Darmerkrankungen (engl. inflammatory bowel diseases, IBD) sind gas
 
 In diesem Projekt werden wir verschiedene bioinformatische Methoden nutzen, um solche relevanten pathobiologischen Prozesse aufzudecken. Dazu greifen wir auf Transkriptomdaten von IBD Patienten zurück, die wir Transkriptomdaten von gesunden Probanden vergleichen werden. Expressions- und Enrichmentanalysen werden es uns erlauben, biologische Prozesse und Signalwege zu identifizieren, die bei IBD gestört sind. Diese Erkenntnisse werden dazu beitragen unser Verständnis der Erkrankung zu vertiefen und Hinweise auf mögliche therapeutische Ansätze liefern.
 
+#### Arbeitsmatrix
+
+| Thema | BearbeiterIn | Anteil |
+|-------|--------------|--------|
+#### Projektmitglieder
+
+Niklas Mainzer
+Ricarda Koperski
+Debroah Höltje

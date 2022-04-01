@@ -2,20 +2,34 @@ library(BiocGenerics)
 library(Biobase)
 library(limma)
 
+##################
+### Referenzen ###
+##################
+
+# Folgende Online Referenzen, wurden bei der Programmierung zur Hilfe genommen:
+
+# https://ucdavis-bioinformatics-training.github.io/2018-June-RNA-Seq-Workshop/thursday/DE.html
+# https://jdblischak.github.io/dc-bioc-limma/vdx.html
+# https://learn.gencore.bio.nyu.edu/rna-seq-analysis/gene-set-enrichment-analysis/
+# https://academic.oup.com/nar/article/43/7/e47/2414268
+# Official Bioconductor documentation
+
+# Alle Links wurden zuletzt am 1.04.2022 um 12:00 geöffnet
+
 ####################
 ### Prepare Data ###
 ####################
 
-data <- read.table(file = "/Users/deborahhoeltje/Desktop/TUBS4/medDaten/Prüfungsprojekte/Project8_crohns.txt", header = TRUE)
+data <- read.table(file = "./Project8_crohns.txt", header = TRUE)
 
-data_control <- read.table(file = "/Users/deborahhoeltje/Desktop/TUBS4/medDaten/Prüfungsprojekte/Project8_control.txt", header = TRUE)
+data_control <- read.table(file = "./Project8_control.txt", header = TRUE)
 
 colnames(data) <- c('hgnc', 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
 colnames(data_control) <- c('hgnc', 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1)
 
 total_data <- merge(data, data_control)
 
-# 0 for MD patients and 1 for control group
+# 0 for MC patients and 1 for control group
 colnames(total_data)= c('hgnc', 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1)
 
 ###########################
@@ -58,10 +72,11 @@ data_filtered_dist_samples <- dist(t(filtered_matrix))
 gene_hclust <- hclust(data_filtered_dist_genes, method = "complete")
 plot(gene_hclust)
 
+# Cut the tree at cluster size k=2
 cutree(gene_hclust, k = 2)
 
-# 1500 random genes
-random_total_data <- total_data[sample(nrow(total_data), 1500), ]
+# Hierarchical Clustering with 500 random genes
+random_total_data <- total_data[sample(nrow(total_data), 500), ]
 random_total_data_matrix <- data.matrix(random_total_data)
 random_total_data_matrix <- random_total_data_matrix[,-c(1)]
 random_total_dist_samples = dist(t(random_total_data_matrix))
