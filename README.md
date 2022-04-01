@@ -10,6 +10,12 @@ In diesem Projekt werden wir verschiedene bioinformatische Methoden nutzen, um s
 
 | Thema | BearbeiterIn | Anteil |
 |-------|--------------|--------|
+|Kapitel 3|Deborah|100%|
+|Kapitel 4|Niklas|100%|
+|Kapitel 5|Niklas, Deborah|50%, 50%|
+|Kapitel 6| Ricarda |100 %|
+|Kapitel 7|Ricarda|100%|
+|Kapitel 8|Niklas|100%|
 #### Projektmitglieder
 
 Niklas Mainzer
