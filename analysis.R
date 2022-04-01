@@ -190,7 +190,7 @@ cnetplot(gse, categorySize="pvalue", foldChange=gene_list) # categorySize="geneN
 
 ridgeplot(gse) + labs(x = "enrichment distribution")
 
-# GSEAplot/Barcodeplot, index ist das jeweilige Gen in der GESA
+# GSEAplot/Barcodeplot, index ist das jeweilige Gen in der GSEA
 gseaplot(gse, by = "all", title = gse$Description[2], geneSetID = 2)
 # Find the gene set to be plotted by the Name
 which(gse_desc %in% "cellular response to cholesterol" )
