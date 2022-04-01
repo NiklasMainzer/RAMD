@@ -1,11 +1,22 @@
+library(BiocGenerics)
 library(Biobase)
 library(limma)
+
+####################
+### Prepare Data ###
+####################
 
 data <- read.table(file = "/Users/deborahhoeltje/Desktop/TUBS4/medDaten/Prüfungsprojekte/Project8_crohns.txt", header = TRUE)
 
 data_control <- read.table(file = "/Users/deborahhoeltje/Desktop/TUBS4/medDaten/Prüfungsprojekte/Project8_control.txt", header = TRUE)
 
-total_data <- data.frame(data, data_control)
+colnames(data) <- c('hgnc', 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+colnames(data_control) <- c('hgnc', 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1)
+
+total_data <- merge(data, data_control)
+
+# 0 for MD patients and 1 for control group
+colnames(total_data)= c('hgnc', 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1)
 
 ###########################
 ### Explorative Analyse ###
@@ -22,7 +33,11 @@ plotDensities(total_data_matrix)
 # Points further from M=0 line indicate genes with significant expression - down/upregulated
 limma::plotMA(total_data_matrix, main="MA Plot")
 
-#Hierarchical cluster (all genes would be too much), choose the ones that have the highest difference between the median of ibd patients & control group
+plotMDS(total_data_matrix)
+
+# Hierarchical cluster (all genes would be too much), choose the ones that have the highest difference between the median of ibd patients & control group
+ibd_median <- apply(data[,-1], 1, median)
+control_median <- apply(data_control[,-1], 1, median)
 median_both <- data.frame(ibd = ibd_median, control=control_median)
 median_both$hgnc <- data$hgnc
 median_both$diff <- median_both$ibd - median_both$control
@@ -45,7 +60,7 @@ plot(gene_hclust)
 
 cutree(gene_hclust, k = 2)
 
-# 150 random genes
+# 1500 random genes
 random_total_data <- total_data[sample(nrow(total_data), 1500), ]
 random_total_data_matrix <- data.matrix(random_total_data)
 random_total_data_matrix <- random_total_data_matrix[,-c(1)]
@@ -58,8 +73,6 @@ plot(random_clust)
 #############
 
 groups = gsub("_.*", "", colnames(total_data))
-
-# 0 for MD patients and 1 for control group
 colnames(total_data)= c('hgnc', 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1)
 
 groups = colnames(total_data)
@@ -74,23 +87,18 @@ head(coef(fit))
 dim(coef(fit))
 coef_matrix <- coef(fit)
 
-bayes_fit <- eBayes(fit)
-head(bayes_fit)
-head(bayes_fit$t, 3)
-results <- decideTests(bayes_fit[, 1])
-
-# Test DE between group0 (MD patients) and group1 (control)
+# Test DE between group0 (MC patients) and group1 (control)
 contmatrix = makeContrasts(groups0 - groups1, levels=colnames(design))
 fit2 <- contrasts.fit(fit, contmatrix)
 fit2
 
-# empirischer Bayes wird verwendet, wenn man wenige samples hat. Hier wird die globale Varianz über alle Gene geschätzt in in die Genweite Varianz miteinbezogen (Gene mit hoher Varianz werden nach unten angepasst und Gene mit einer niedrigen Varianz nach oben)
+# Empirischer Bayes
 # Berechnet t-Statistik, F-Statistik, log-odds und differential expression
 fit2 <- eBayes(fit2)
 
 # Multiple Testing: If t-statistic (and p value) is signifincantly neg/pos/not significant
-# Compares ibd with control 
-summary(decideTests(fit2))
+# Compares MC with control 
+summary(decideTests(fit2, adjust.method = "BH"))
 #       groups0 - groups1
 # Down                3554  -> comparing ibd to control these genes are neg. significant 
 # NotSig             16655  -> comparing ibd to control these genes are not significant 
@@ -107,14 +115,11 @@ head(top.table_fc, 20)
 ### Plots ###
 #############
 
-stats <- topTable(fit2, number = nrow(fit2), sort.by = "none")
+statistics <- topTable(fit2, number = nrow(fit2), sort.by = "none")
 head(top.table, 20)
 
-# random deviates of the uniform distribution 
-hist(runif(10000))
-
 # Histogram by p value of DE
-hist(stats[, "P.Value"])
+hist(statistics[, "P.Value"])
 
 # Statistical significance (p value) vs magnitude of change (fold change)
 # most significant genes are at top (high p value) and left/right the most up/downregulated genes
@@ -144,12 +149,9 @@ gene_list = sort(gene_list, decreasing = TRUE)
 
 # Gene Set Enrichment Analysis of Gene Ontology
 # CC: Cellular Component, MF: Molecular function, BP: Biological Process
-# Only gene Set size in [minGSSize, maxGSSize] will be tested
-# GSEA use permutation test -> nPerm ---> also tried without perm (see plots annotated with *_noPerm.pdf)
 gse <- gseGO(geneList=gene_list, 
              ont ="ALL", 
              keyType = "SYMBOL", 
-             # nPerm = 10000, 
              minGSSize = 3, 
              maxGSSize = 800, 
              pvalueCutoff = 0.05, 
@@ -165,17 +167,18 @@ require(DOSE)
 
 dotplot(gse, showCategory=10, split=".sign") + facet_grid(.~.sign)
 
-gse2 <- pairwise_termsim(gse, semData="org.Hs.eg.db") # Falsche DB -> mit neues DB emap_neu.pdf
+gse2 <- pairwise_termsim(gse, semData="org.Hs.eg.db") 
 emapplot(gse2)
 
 cnetplot(gse, categorySize="pvalue", foldChange=gene_list, showCategory = 3)
-cnetplot(gse, categorySize="pvalue", foldChange=gene_list)
+cnetplot(gse, categorySize="pvalue", foldChange=gene_list) # categorySize="geneNum"
 
 ridgeplot(gse) + labs(x = "enrichment distribution")
 
-# http://www.gsea-msigdb.org/gsea/doc/GSEAUserGuideFrame.html?_Interpreting_GSEA_Results
-# GSEAplot, index ist das jeweilige Gen in der GESA
+# GSEAplot/Barcodeplot, index ist das jeweilige Gen in der GESA
 gseaplot(gse, by = "all", title = gse$Description[2], geneSetID = 2)
+# Find the gene set to be plotted by the Name
+which(gse_desc %in% "cellular response to cholesterol" )
 
 pmcplot(terms, 2010:2021, proportion=FALSE)
 
@@ -184,15 +187,13 @@ pmcplot(terms, 2010:2021, proportion=FALSE)
 ###################################
 
 # Problematic: just counting ignores p-values and fold-changes
-
-# https://jdblischak.github.io/dc-bioc-limma/vdx.html
 # GO over representation analysis
+fit3 <- fit2
 enrich_go <- goana(fit3, geneid = entrez, species = "Hs") # Hs for Homo Sapiens
 topGO(enrich_go, ontology = "BP")
 topGO(enrich_go)
 
 # Convert SYMBOL to ENTREZ
-#names(gene_list) <- entrez2$entrez
 de <- names(gene_list)[abs(gene_list) > 2]
 ego <- enrichGO(de, OrgDb = "org.Hs.eg.db", keyType="SYMBOL", ont="BP", readable=FALSE)
 goplot(ego)
@@ -233,15 +234,6 @@ cnetplot(kk2, categorySize="pvalue", foldChange=gene_list)
 ridgeplot(kk2) + labs(x = "enrichment distribution")
 out_kk2 <- as.matrix(kk2@result)
 
-# Plot Pathways in graphics
-library(pathview)
-# take pathways form kegga_pathway.txt
-dme <- pathview(gene.data=kegg_gene_list, pathway.id="hsa02010", species = kegg_organism)
-
-# TODO: 
-# - Fishers t test to obtain p-values
-# - overrepresentation analysis: https://yulab-smu.top/biomedical-knowledge-mining-book/enrichment-overview.html
-
 #######################
 ### Pathway Analyse ###
 #######################
@@ -253,10 +245,14 @@ entrez2 <- transpose(entrez2)
 colnames(entrez2) <- 'entrez'
 
 # Replace the hgnc genes with the entrez
-fit3 <- fit2
 fit3$genes <- entrez2
 
 # KEGG Pathway analysis (kegga)
 entrez_kegga = fit3$genes[, "entrez"]
 enrich_kegg <- kegga(fit3, geneid = entrez_kegga, species = "Hs")
 topKEGG(enrich_kegg) # kegga_pathway.txt
+
+# Plot Pathways in graphics
+library(pathview)
+# take pathways form kegga_pathway.txt
+dme <- pathview(gene.data=kegg_gene_list, pathway.id="hsa02010", species = kegg_organism)

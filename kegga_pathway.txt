@@ -1,3 +1,5 @@
+
+
                                                         Pathway    N  Up Down         P.Up       P.Down
 path:hsa01100                                Metabolic pathways 1430 168  398 2.041552e-02 4.939222e-33 Stoffwechselprozess
 path:hsa04714                                     Thermogenesis  204  16   89 8.873235e-01 2.828864e-21 Wärmeproduktion d. Stoffwechselaktiv. (Energie, Verdauung...)
@@ -19,3 +21,5 @@ path:hsa05133                                         Pertussis   70  31    7 1.
 path:hsa04940                          Type I diabetes mellitus   40  23    2 1.862413e-13 9.913609e-01
 path:hsa04612               Antigen processing and presentation   63  29    7 2.824350e-13 8.891230e-01 Produktion und Präsentation von Antigenen adaptives Immunsystem
 path:hsa05416                                 Viral myocarditis   57  27    7 7.873009e-13 8.183961e-01 Autoinflammatorische Herzmuskelentzündung
+
+
